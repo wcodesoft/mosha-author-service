@@ -1,0 +1,30 @@
+name: Test Buso Golang library
+
+on:
+  push:
+    branches:
+      - 'main'
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+
+  unit_test_service:
+    runs-on: ubuntu-latest
+    steps:
+      #----------------------------------------------
+      #       check-out repo and setup Java
+      #----------------------------------------------
+      - name: Check out repository
+        uses: actions/checkout@v3
+      - uses: actions/setup-go@v4
+        with:
+          go-version: '^1.20' # The Go version to download (if necessary) and use.
+      - name: Initialize Golang environment
+        run: go mod tidy
+      #----------------------------------------------
+      #       Run unit tests for the library
+      #----------------------------------------------
+      - name: Run unit tests on the Golang library
+        run: go test -v ./...
