@@ -14,9 +14,9 @@ type Database interface {
 }
 
 type authorDB struct {
-	ID     string `db:"id"`
-	Name   string `db:"name"`
-	PicURL string `db:"picurl"`
+	ID     string `bson:"_id" json:"id,omitempty"`
+	Name   string `bson:"name"`
+	PicURL string `bson:"picurl"`
 }
 
 func fromAuthor(author data.Author) authorDB {
