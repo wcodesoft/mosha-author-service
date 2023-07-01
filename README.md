@@ -25,3 +25,11 @@ After that to run the container, run:
 ```bash
 docker run --name mosha-author-service -e MONGO_DB_HOST="mongodb://localhost:27017" --net=bridge -p 8180:8180 -d mosha-author-service
 ```
+
+## gRPC
+
+The communication between services is done using gRPC. To regenerate the gRPC code, run:
+
+```bash
+protoc -I proto/ proto/author.proto --go_out=plugins=grpc:proto
+```

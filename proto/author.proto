@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+package authorservice;
+option go_package = "github.com/wcodesoft/mosha-author-service/proto";
+
+import "google/protobuf/empty.proto";
+
+
+// The AuthorService service definition.
+service AuthorService {
+  // GetAuthor returns an author by id
+  rpc GetAuthor(GetAuthorRequest) returns (Author) {}
+
+  // ListAuthors returns a list of authors
+  rpc ListAuthors(google.protobuf.Empty) returns (ListAuthorsResponse) {}
+
+  // CreateAuthor creates a new author
+  rpc CreateAuthor(CreateAuthorRequest) returns (Author) {}
+
+  // UpdateAuthor updates an existing author
+  rpc UpdateAuthor(UpdateAuthorRequest) returns (Author) {}
+
+  // DeleteAuthor deletes an author by id
+  rpc DeleteAuthor(DeleteAuthorRequest) returns (DeleteAuthorResponse) {}
+}
+
+// The author message
+message Author {
+  string id = 1;
+  string name = 2;
+  string picURL = 3;
+}
+
+// The GetAuthorRequest message
+message GetAuthorRequest {
+  string id = 1;
+}
+
+// The ListAuthorsResponse message
+message ListAuthorsResponse {
+  repeated Author authors = 1;
+}
+
+// The CreateAuthorRequest message
+message CreateAuthorRequest {
+  Author author = 1;
+}
+
+// The UpdateAuthorRequest message
+message UpdateAuthorRequest {
+  Author author = 1;
+}
+
+// The DeleteAuthorRequest message
+message DeleteAuthorRequest {
+  string id = 1;
+}
+
+// The DeleteAuthorResponse message
+message DeleteAuthorResponse {
+  bool success = 1;
+}
