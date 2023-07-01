@@ -79,7 +79,7 @@ func main() {
 		}
 		// Create a new GrpcRouter.
 		log.Infof("Starting %s grpc on %s", AuthorServiceName, grpcPort)
-		lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%s", grpcPort))
+		lis, err := net.Listen("tcp", fmt.Sprintf(":%s", grpcPort))
 		if err != nil {
 			log.Fatalf("Failed to listen: %v", err)
 		}
