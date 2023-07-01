@@ -9,7 +9,7 @@ on:
 jobs:
 
   push_to_registry:
-    name: Push Docker image to registry
+    name: Push Docker image to Github Container Registry
     runs-on: ubuntu-latest
     steps:
       - name: Login to GitHub Container Registry
@@ -23,7 +23,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           push: true
-          context: .
+          context: ./ # the Dockerfile is in the root of the repository
           tags: |
             ghcr.io/${{ github.repository }}:${{ github.sha }}
             ghcr.io/${{ github.repository }}:${{ github.event.release.tag_name }}
