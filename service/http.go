@@ -1,10 +1,10 @@
 package service
 
 import (
-	"authorservice/data"
 	"encoding/json"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/wcodesoft/mosha-author-service/data"
 	"net/http"
 )
 

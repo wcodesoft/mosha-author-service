@@ -1,6 +1,6 @@
 package repository
 
-import "authorservice/data"
+import "github.com/wcodesoft/mosha-author-service/data"
 
 // Repository represents the repository interface.
 type Repository interface {

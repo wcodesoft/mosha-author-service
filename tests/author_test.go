@@ -1,8 +1,8 @@
 package tests
 
 import (
-	"authorservice/data"
 	. "github.com/smartystreets/goconvey/convey"
+	"github.com/wcodesoft/mosha-author-service/data"
 	"testing"
 )
 

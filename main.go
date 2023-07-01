@@ -1,13 +1,13 @@
 package main
 
 import (
-	pb "authorservice/proto"
-	"authorservice/repository"
-	"authorservice/service"
 	"context"
 	"fmt"
 	"github.com/charmbracelet/log"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
+	pb "github.com/wcodesoft/mosha-author-service/proto"
+	"github.com/wcodesoft/mosha-author-service/repository"
+	"github.com/wcodesoft/mosha-author-service/service"
 	"google.golang.org/grpc"
 	"net"
 	"net/http"

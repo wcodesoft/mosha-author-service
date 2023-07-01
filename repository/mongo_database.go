@@ -1,10 +1,10 @@
 package repository
 
 import (
-	"authorservice/data"
 	"context"
 	"fmt"
 	"github.com/charmbracelet/log"
+	"github.com/wcodesoft/mosha-author-service/data"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"

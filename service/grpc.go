@@ -1,12 +1,12 @@
 package service
 
 import (
-	"authorservice/data"
 	"context"
 	"fmt"
+	"github.com/wcodesoft/mosha-author-service/data"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	pb "authorservice/proto"
+	pb "github.com/wcodesoft/mosha-author-service/proto"
 )
 
 // GrpcRouter represents the gRPC router.

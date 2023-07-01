@@ -1,9 +1,9 @@
 package tests
 
 import (
-	"authorservice/data"
-	"authorservice/repository"
 	"fmt"
+	"github.com/wcodesoft/mosha-author-service/data"
+	"github.com/wcodesoft/mosha-author-service/repository"
 )
 
 // inMemoryDatabase is a simple in-memory database.

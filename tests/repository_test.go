@@ -1,9 +1,9 @@
 package tests
 
 import (
-	"authorservice/data"
-	"authorservice/repository"
 	. "github.com/smartystreets/goconvey/convey"
+	"github.com/wcodesoft/mosha-author-service/data"
+	"github.com/wcodesoft/mosha-author-service/repository"
 	"testing"
 )
 

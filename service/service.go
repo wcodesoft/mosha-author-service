@@ -1,8 +1,8 @@
 package service
 
 import (
-	"authorservice/data"
-	"authorservice/repository"
+	"github.com/wcodesoft/mosha-author-service/data"
+	"github.com/wcodesoft/mosha-author-service/repository"
 )
 
 // Service represents the service interface.

@@ -1,10 +1,10 @@
 package tests
 
 import (
-	"authorservice/data"
-	"authorservice/repository"
-	as "authorservice/service"
 	. "github.com/smartystreets/goconvey/convey"
+	"github.com/wcodesoft/mosha-author-service/data"
+	"github.com/wcodesoft/mosha-author-service/repository"
+	as "github.com/wcodesoft/mosha-author-service/service"
 	"testing"
 )
 
