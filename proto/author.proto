@@ -28,7 +28,7 @@ service AuthorService {
 message Author {
   string id = 1;
   string name = 2;
-  string picURL = 3;
+  string picUrl = 3;
 }
 
 // The GetAuthorRequest message

@@ -31,5 +31,7 @@ docker run --name mosha-author-service -e MONGO_DB_HOST="mongodb://localhost:270
 The communication between services is done using gRPC. To regenerate the gRPC code, run:
 
 ```bash
-protoc -I proto/ proto/author.proto --go_out=plugins=grpc:proto
+protoc --go_out=. --go_opt=paths=source_relative \
+  --go-grpc_out=. --go-grpc_opt=paths=source_relative \
+  proto/author.proto
 ```

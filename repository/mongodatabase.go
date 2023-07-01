@@ -4,10 +4,10 @@ import (
 	"authorservice/data"
 	"context"
 	"fmt"
+	"github.com/charmbracelet/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"log"
 )
 
 type mongoDatabase struct {
@@ -87,7 +87,7 @@ func NewMongoDatabase(mongoURI string, database string) Database {
 		panic(err)
 	}
 	coll := client.Database(database).Collection("authors")
-	log.Printf("Connected to MongoDB: %s", mongoURI)
+	log.Infof("Connected to MongoDB: %s", mongoURI)
 	return &mongoDatabase{
 		client: client,
 		coll:   coll,

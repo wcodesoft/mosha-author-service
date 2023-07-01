@@ -3,7 +3,6 @@ package service
 import (
 	"authorservice/data"
 	"authorservice/repository"
-	"log"
 )
 
 // Service represents the service interface.
@@ -41,7 +40,6 @@ func New(repo repository.Repository) Service {
 
 // CreateAuthor registers a new Author in the database.
 func (s *service) CreateAuthor(author data.Author) (string, error) {
-	log.Printf("Adding author: %q", author)
 	return s.repo.AddAuthor(author)
 }
 
