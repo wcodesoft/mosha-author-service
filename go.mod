@@ -1,4 +1,4 @@
-module authorservice
+module github.com/wcodesoft/mosha-author-service
 
 go 1.20
 
