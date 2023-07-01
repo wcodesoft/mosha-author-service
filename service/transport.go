@@ -47,12 +47,12 @@ func MakeHandler(service Service) http.Handler {
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
-	r.Post("/author/v1/", addAuthorHandler.ServeHTTP)
-	r.Get("/author/v1/all", listAll.ServeHTTP)
-	r.Get("/author/v1/{id}", getAuthorHandler.ServeHTTP)
-	r.Post("/author/v1/delete/{id}", deleteAuthorHandler.ServeHTTP)
-	r.Get("/author/v1/exist/{id}", authorExistHandler.ServeHTTP)
-	r.Post("/author/v1/update/{id}", updateAuthorHandler.ServeHTTP)
+	r.Get("/api/v1/author/all", listAll.ServeHTTP)
+	r.Get("/api/v1/author/{id}", getAuthorHandler.ServeHTTP)
+	r.Get("/api/v1/author/exist/{id}", authorExistHandler.ServeHTTP)
+	r.Post("/api/v1/author/delete/{id}", deleteAuthorHandler.ServeHTTP)
+	r.Post("/api/v1/author/update/{id}", updateAuthorHandler.ServeHTTP)
+	r.Post("/api/v1/author", addAuthorHandler.ServeHTTP)
 
 	return r
 }
