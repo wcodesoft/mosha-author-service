@@ -14,14 +14,20 @@ func TestRepository(t *testing.T) {
 		repo := repository.New(db)
 
 		Convey("When adding an author", func() {
-			id, _ := repo.AddAuthor(data.NewWithId("123", "John Doe", "http://example.com/john-doe.jpg"))
+			builder := data.
+				NewAuthorBuilder().
+				WithId("123").
+				WithName("John Doe").
+				WithPicUrl("http://example.com/john-doe.jpg")
+			author := builder.Build()
+			id, _ := repo.AddAuthor(author)
 
 			Convey("The list of authors should contain the new author", func() {
 				So(len(repo.ListAll()), ShouldEqual, 1)
 			})
 
 			Convey("Adding with same ID should fail", func() {
-				_, err := repo.AddAuthor(data.NewWithId(id, "John Doe", "http://example.com/john-doe.jpg"))
+				_, err := repo.AddAuthor(author)
 				So(err, ShouldNotBeNil)
 			})
 
@@ -33,7 +39,13 @@ func TestRepository(t *testing.T) {
 			})
 
 			Convey("Updating the author should return the updated author", func() {
-				author, _ := repo.UpdateAuthor(data.NewWithId(id, "John New Doe", "http://example.com/john-doe.jpg"))
+				author, _ := repo.UpdateAuthor(
+					builder.
+						WithId(id).
+						WithName("John New Doe").
+						WithPicUrl("http://example.com/john-doe.jpg").
+						Build(),
+				)
 				So(author.ID, ShouldEqual, "123")
 				So(author.Name, ShouldNotEqual, "John Doe")
 				So(author.Name, ShouldEqual, "John New Doe")
@@ -41,7 +53,7 @@ func TestRepository(t *testing.T) {
 		})
 
 		Convey("When deleting an author", func() {
-			authorID, _ := repo.AddAuthor(data.New("John Doe", "http://example.com/john-doe.jpg"))
+			authorID, _ := repo.AddAuthor(data.NewAuthorBuilder().WithName("John Doe").Build())
 
 			Convey("Deleting the author should remove it from the list", func() {
 				if err := repo.DeleteAuthor(authorID); err != nil {
@@ -66,15 +78,22 @@ func TestRepository(t *testing.T) {
 		})
 
 		Convey("When updating an author that does not exist", func() {
-			_, err := repo.UpdateAuthor(data.New("John Doe", "http://example.com/john-doe.jpg"))
+			_, err := repo.UpdateAuthor(data.NewAuthorBuilder().Build())
 			Convey("An error should be returned", func() {
 				So(err, ShouldNotBeNil)
 			})
 		})
 
 		Convey("When listing all authors", func() {
-			author1, _ := repo.AddAuthor(data.New("John Doe", "http://example.com/john-doe.jpg"))
-			author2, _ := repo.AddAuthor(data.New("Jane Doe", "http://example.com/jane-doe.jpg"))
+			author1, _ := repo.AddAuthor(data.NewAuthorBuilder().
+				WithName("John Doe").
+				WithPicUrl("http://example.com/john-doe.jpg").
+				Build())
+			author2, _ := repo.AddAuthor(
+				data.NewAuthorBuilder().
+					WithName("Jane Doe").
+					WithPicUrl("http://example.com/john-doe.jpg").
+					Build())
 
 			Convey("The list should contain all authors", func() {
 				authors := repo.ListAll()
@@ -85,7 +104,11 @@ func TestRepository(t *testing.T) {
 		})
 
 		Convey("When checking if an author exists", func() {
-			authorID, _ := repo.AddAuthor(data.New("John Doe", "http://example.com/john-doe.jpg"))
+			authorID, _ := repo.AddAuthor(data.NewAuthorBuilder().
+				WithName("John Doe").
+				WithPicUrl("http://example.com/john-doe.jpg").
+				Build(),
+			)
 
 			Convey("The author should exist", func() {
 				So(repo.AuthorExist(authorID), ShouldBeTrue)

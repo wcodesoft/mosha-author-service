@@ -8,6 +8,12 @@ import (
 	"testing"
 )
 
+func createJohnDoe() data.Author {
+	return data.NewAuthorBuilder().
+		WithName("John Doe").
+		WithPicUrl("http://example.com/john-doe.jpg").
+		Build()
+}
 func TestService(t *testing.T) {
 
 	Convey("When creating a new service", t, func() {
@@ -20,7 +26,7 @@ func TestService(t *testing.T) {
 		})
 
 		Convey("When adding an author", func() {
-			authorId, _ := service.CreateAuthor(data.New("John Doe", "http://example.com/john-doe.jpg"))
+			authorId, _ := service.CreateAuthor(createJohnDoe())
 			Convey("The list of authors should contain the new author", func() {
 				So(len(service.ListAll()), ShouldEqual, 1)
 			})
@@ -34,7 +40,7 @@ func TestService(t *testing.T) {
 		})
 
 		Convey("When deleting an author", func() {
-			authorId, _ := service.CreateAuthor(data.New("John Doe", "http://example.com/john-doe.jpg"))
+			authorId, _ := service.CreateAuthor(createJohnDoe())
 			err := service.DeleteAuthor(authorId)
 			Convey("The list of authors should be empty", func() {
 				So(len(service.ListAll()), ShouldEqual, 0)
@@ -51,10 +57,15 @@ func TestService(t *testing.T) {
 		})
 
 		Convey("When updating an author", func() {
-			authorId, _ := service.CreateAuthor(data.New("John Doe", "http://example.com/john-doe.jpg"))
+			authorId, _ := service.CreateAuthor(createJohnDoe())
 
 			Convey("Updating the author should return the updated author", func() {
-				author, _ := service.UpdateAuthor(data.NewWithId(authorId, "John New Doe", "http://example.com/john-doe.jpg"))
+				author, _ := service.UpdateAuthor(data.NewAuthorBuilder().
+					WithName("John New Doe").
+					WithId(authorId).
+					WithPicUrl("http://example.com/john-doe.jpg").
+					Build(),
+				)
 				So(author.ID, ShouldEqual, authorId)
 				So(author.Name, ShouldNotEqual, "John Doe")
 				So(author.Name, ShouldEqual, "John New Doe")
@@ -62,7 +73,7 @@ func TestService(t *testing.T) {
 		})
 
 		Convey("When checking if an author exists", func() {
-			authorId, _ := service.CreateAuthor(data.New("John Doe", "http://example.com/john-doe.jpg"))
+			authorId, _ := service.CreateAuthor(createJohnDoe())
 
 			Convey("The author should exist", func() {
 				So(service.AuthorExist(authorId), ShouldBeTrue)

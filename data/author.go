@@ -12,19 +12,52 @@ type Author struct {
 	PicURL string `json:"picUrl"`
 }
 
-// NewWithId creates a new author with the given id, name and picUrl.
-func NewWithId(id, name, picUrl string) Author {
-	return Author{
-		ID:     id,
-		Name:   name,
-		PicURL: picUrl,
+// AuthorBuilder is the interface that builds an author.
+type AuthorBuilder interface {
+	WithId(id string) AuthorBuilder
+	WithName(name string) AuthorBuilder
+	WithPicUrl(picUrl string) AuthorBuilder
+	Build() Author
+}
+
+type authorBuilder struct {
+	id     string
+	name   string
+	picUrl string
+}
+
+// NewAuthorBuilder creates a new author builder.
+func NewAuthorBuilder() AuthorBuilder {
+	return &authorBuilder{
+		id:     uuid.New().String(),
+		name:   "",
+		picUrl: "",
 	}
 }
 
-func New(name, picUrl string) Author {
+// WithId sets the id of the author.
+func (ab *authorBuilder) WithId(id string) AuthorBuilder {
+	ab.id = id
+	return ab
+}
+
+// WithName sets the name of the author.
+func (ab *authorBuilder) WithName(name string) AuthorBuilder {
+	ab.name = name
+	return ab
+}
+
+// WithPicUrl sets the picUrl of the author.
+func (ab *authorBuilder) WithPicUrl(picUrl string) AuthorBuilder {
+	ab.picUrl = picUrl
+	return ab
+}
+
+// Build builds the author.
+func (ab *authorBuilder) Build() Author {
 	return Author{
-		ID:     uuid.New().String(),
-		Name:   name,
-		PicURL: picUrl,
+		ID:     ab.id,
+		Name:   ab.name,
+		PicURL: ab.picUrl,
 	}
 }

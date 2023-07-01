@@ -8,44 +8,8 @@ import (
 	"net/http"
 )
 
-// addAuthorRequest represents the request to add an author.
-type addAuthorRequest struct {
-	ID     string `json:"id"`
-	Name   string `json:"name"`
-	PicURL string `json:"picUrl"`
-}
-
-// getAuthorResponse represents the response from getting an author.
-type getAuthorResponse struct {
-	Author data.Author `json:"author"`
-}
-
-// addAuthorResponse represents the response from adding an author.
-type addAuthorResponse struct {
+type idResponse struct {
 	ID string `json:"id"`
-}
-
-// deleteAuthorResponse represents the response from deleting an author.
-type deleteAuthorResponse struct {
-	Success bool  `json:"success"`
-	Err     error `json:"err,omitempty"`
-}
-
-// authorExistResponse represents the response from checking if an author exists.
-type authorExistResponse struct {
-	Exist bool `json:"exist"`
-}
-
-// updateAuthorRequest represents the request to update an author.
-type updateAuthorRequest struct {
-	ID     string `json:"id"`
-	Name   string `json:"name"`
-	PicURL string `json:"picUrl"`
-}
-
-// updateAuthorResponse represents the response from updating an author.
-type updateAuthorResponse struct {
-	Author data.Author `json:"author"`
 }
 
 type HttpRouter struct {
@@ -59,11 +23,10 @@ func NewHttpRouter(s Service) HttpRouter {
 func (h HttpRouter) MakeHandler() http.Handler {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
-	r.Get("/api/v1/author/all", h.listAll)
+	r.Get("/api/v1/author/all", h.listAllHandler)
 	r.Get("/api/v1/author/{id}", h.getAuthorHandler)
-	r.Get("/api/v1/author/exist/{id}", h.authorExistHandler)
 	r.Post("/api/v1/author/delete/{id}", h.deleteAuthorHandler)
-	r.Post("/api/v1/author/update/{id}", h.updateAuthorHandler)
+	r.Post("/api/v1/author/update", h.updateAuthorHandler)
 	r.Post("/api/v1/author", h.addAuthorHandler)
 
 	return r
@@ -76,22 +39,20 @@ func encodeResponse(w http.ResponseWriter, response interface{}) {
 }
 
 func (h HttpRouter) addAuthorHandler(w http.ResponseWriter, r *http.Request) {
-	var request addAuthorRequest
+	var request data.Author
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		encodeResponse(w, err)
 		return
 	}
 
-	resp, err := h.service.CreateAuthor(data.Author{
-		ID: request.ID, Name: request.Name, PicURL: request.PicURL,
-	})
+	resp, err := h.service.CreateAuthor(request)
 
 	if err != nil {
 		encodeResponse(w, err)
 		return
 	}
 
-	encodeResponse(w, addAuthorResponse{ID: resp})
+	encodeResponse(w, idResponse{ID: resp})
 }
 
 func (h HttpRouter) getAuthorHandler(w http.ResponseWriter, r *http.Request) {
@@ -104,7 +65,7 @@ func (h HttpRouter) getAuthorHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	encodeResponse(w, getAuthorResponse{Author: resp})
+	encodeResponse(w, resp)
 }
 
 func (h HttpRouter) deleteAuthorHandler(w http.ResponseWriter, r *http.Request) {
@@ -113,41 +74,31 @@ func (h HttpRouter) deleteAuthorHandler(w http.ResponseWriter, r *http.Request) 
 	err := h.service.DeleteAuthor(id)
 
 	if err != nil {
-		encodeResponse(w, deleteAuthorResponse{Success: false, Err: err})
+		encodeResponse(w, err)
 		return
 	}
 
-	encodeResponse(w, deleteAuthorResponse{Success: true})
-}
-
-func (h HttpRouter) authorExistHandler(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
-
-	resp := h.service.AuthorExist(id)
-
-	encodeResponse(w, authorExistResponse{Exist: resp})
+	encodeResponse(w, idResponse{ID: id})
 }
 
 func (h HttpRouter) updateAuthorHandler(w http.ResponseWriter, r *http.Request) {
-	var request updateAuthorRequest
+	var request data.Author
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		encodeResponse(w, err)
 		return
 	}
 
-	resp, err := h.service.UpdateAuthor(data.Author{
-		ID: request.ID, Name: request.Name, PicURL: request.PicURL,
-	})
+	resp, err := h.service.UpdateAuthor(request)
 
 	if err != nil {
 		encodeResponse(w, err)
 		return
 	}
 
-	encodeResponse(w, updateAuthorResponse{Author: resp})
+	encodeResponse(w, resp)
 }
 
-func (h HttpRouter) listAll(w http.ResponseWriter, _ *http.Request) {
+func (h HttpRouter) listAllHandler(w http.ResponseWriter, _ *http.Request) {
 	resp := h.service.ListAll()
 
 	encodeResponse(w, resp)
