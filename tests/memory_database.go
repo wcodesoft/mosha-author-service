@@ -41,10 +41,7 @@ func (db *inMemoryDatabase) UpdateAuthor(author data.Author) (data.Author, error
 	if _, ok := db.storage[author.ID]; !ok {
 		return data.Author{}, fmt.Errorf("author %q do not exist in database", author.ID)
 	}
-	newAuthor := db.storage[author.ID]
-	newAuthor.PicURL = author.PicURL
-	newAuthor.Name = author.Name
-	db.storage[author.ID] = newAuthor
+	db.storage[author.ID] = author
 	return db.storage[author.ID], nil
 }
 

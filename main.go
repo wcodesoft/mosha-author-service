@@ -1,16 +1,9 @@
 package main
 
 import (
-	"context"
-	"fmt"
 	"github.com/charmbracelet/log"
-	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
-	pb "github.com/wcodesoft/mosha-author-service/proto"
 	"github.com/wcodesoft/mosha-author-service/repository"
 	"github.com/wcodesoft/mosha-author-service/service"
-	"google.golang.org/grpc"
-	"net"
-	"net/http"
 	"os"
 	"sync"
 )
@@ -30,27 +23,9 @@ func getEnv(key, fallback string) string {
 	return fallback
 }
 
-// InterceptorLogger adapts slog logger to interceptor logger.
-// This code is simple enough to be copied and not imported.
-func InterceptorLogger(l *log.Logger) logging.Logger {
-	return logging.LoggerFunc(func(ctx context.Context, lvl logging.Level, msg string, fields ...any) {
-		switch lvl {
-		case logging.LevelDebug:
-			l.Debugf(msg, fields)
-		case logging.LevelInfo:
-			l.Infof(msg, fields)
-		case logging.LevelWarn:
-			l.Warnf(msg, fields)
-		case logging.LevelError:
-			l.Errorf(msg, fields)
-		default:
-			panic(fmt.Sprintf("unknown level %v", lvl))
-		}
-	})
-}
 func main() {
 	log.Printf("Starting %s", AuthorServiceName)
-	port := getEnv("COMPONENT_PORT", defaultHttpPort)
+	httpPort := getEnv("COMPONENT_PORT", defaultHttpPort)
 	mongoHost := getEnv("MONGO_DB_HOST", defaultMongoHost)
 	grpcPort := getEnv("GRPC_PORT", defaultGrpcPort)
 
@@ -63,34 +38,15 @@ func main() {
 	wg.Add(2)
 
 	go func() {
-		log.Infof("Starting %s http on %s", AuthorServiceName, port)
 		// Create a new HttpRouter.
-		router := service.NewHttpRouter(s)
-		if err := http.ListenAndServe(fmt.Sprintf(":%s", port), router.MakeHandler()); err != nil {
-			log.Fatalf("Unable to start service %q: %s", AuthorServiceName, err)
-		}
+		router := service.NewHttpRouter(s, AuthorServiceName)
+		router.Start(httpPort)
 		wg.Done()
 	}()
 
 	go func() {
-		logger := log.New(os.Stderr)
-		loggerOpts := []logging.Option{
-			logging.WithLogOnEvents(logging.StartCall, logging.FinishCall),
-		}
-		// Create a new GrpcRouter.
-		log.Infof("Starting %s grpc on %s", AuthorServiceName, grpcPort)
-		lis, err := net.Listen("tcp", fmt.Sprintf(":%s", grpcPort))
-		if err != nil {
-			log.Fatalf("Failed to listen: %v", err)
-		}
-		grpcServer := grpc.NewServer(
-			grpc.ChainUnaryInterceptor(
-				logging.UnaryServerInterceptor(InterceptorLogger(logger), loggerOpts...),
-				// Add logging interceptor to grpc server.
-			),
-		)
-		pb.RegisterAuthorServiceServer(grpcServer, service.NewGrpcRouter(s))
-		grpcServer.Serve(lis)
+		grpcRouter := service.NewGrpcRouter(s, AuthorServiceName)
+		grpcRouter.Start(grpcPort)
 		wg.Done()
 	}()
 
