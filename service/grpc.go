@@ -66,7 +66,7 @@ func toAuthorDB(author *pb.Author) data.Author {
 }
 
 // NewGrpcRouter creates a new gRPC router.
-func NewGrpcRouter(s Service) GrpcRouter {
+func NewGrpcRouter(s Service) pb.AuthorServiceServer {
 	return GrpcRouter{service: s}
 }
 
