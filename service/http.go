@@ -2,6 +2,8 @@ package service
 
 import (
 	"encoding/json"
+	"fmt"
+	"github.com/charmbracelet/log"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/wcodesoft/mosha-author-service/data"
@@ -13,11 +15,23 @@ type idResponse struct {
 }
 
 type HttpRouter struct {
-	service Service
+	service     Service
+	serviceName string
 }
 
-func NewHttpRouter(s Service) HttpRouter {
-	return HttpRouter{service: s}
+func NewHttpRouter(s Service, serviceName string) HttpRouter {
+	return HttpRouter{
+		service:     s,
+		serviceName: serviceName,
+	}
+}
+
+func (h HttpRouter) Start(port string) {
+	log.Infof("Starting %s http on %s", h.serviceName, port)
+
+	if err := http.ListenAndServe(fmt.Sprintf(":%s", port), h.MakeHandler()); err != nil {
+		log.Fatalf("Unable to start service %q: %s", h.serviceName, err)
+	}
 }
 
 func (h HttpRouter) MakeHandler() http.Handler {
