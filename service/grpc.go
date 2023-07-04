@@ -6,7 +6,7 @@ import (
 	"github.com/charmbracelet/log"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
 	"github.com/wcodesoft/mosha-author-service/data"
-	"github.com/wcodesoft/mosha-author-service/logger"
+	"github.com/wcodesoft/mosha-service-common/logger"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"net"
