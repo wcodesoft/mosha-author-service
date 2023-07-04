@@ -1,10 +1,9 @@
-package tests
+package service
 
 import (
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/wcodesoft/mosha-author-service/data"
 	"github.com/wcodesoft/mosha-author-service/repository"
-	as "github.com/wcodesoft/mosha-author-service/service"
 	"testing"
 )
 
@@ -17,9 +16,9 @@ func createJohnDoe() data.Author {
 func TestService(t *testing.T) {
 
 	Convey("When creating a new service", t, func() {
-		database := NewInMemoryDatabase()
+		database := repository.NewInMemoryDatabase()
 		repo := repository.New(database)
-		service := as.New(repo)
+		service := New(repo)
 
 		Convey("The service should be initialized", func() {
 			So(service, ShouldNotBeNil)

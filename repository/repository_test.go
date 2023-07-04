@@ -1,9 +1,8 @@
-package tests
+package repository
 
 import (
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/wcodesoft/mosha-author-service/data"
-	"github.com/wcodesoft/mosha-author-service/repository"
 	"testing"
 )
 
@@ -11,7 +10,7 @@ func TestRepository(t *testing.T) {
 
 	Convey("Given a new repository", t, func() {
 		db := NewInMemoryDatabase()
-		repo := repository.New(db)
+		repo := New(db)
 
 		Convey("When adding an author", func() {
 			builder := data.

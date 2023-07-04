@@ -1,14 +1,13 @@
-package tests
+package data
 
 import (
 	. "github.com/smartystreets/goconvey/convey"
-	"github.com/wcodesoft/mosha-author-service/data"
 	"testing"
 )
 
 func TestAuthor(t *testing.T) {
 	Convey("With AuthorBuilder", t, func() {
-		builder := data.NewAuthorBuilder()
+		builder := NewAuthorBuilder()
 
 		Convey("When building an author", func() {
 			author := builder.Build()

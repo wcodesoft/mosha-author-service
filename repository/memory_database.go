@@ -1,9 +1,8 @@
-package tests
+package repository
 
 import (
 	"fmt"
 	"github.com/wcodesoft/mosha-author-service/data"
-	"github.com/wcodesoft/mosha-author-service/repository"
 )
 
 // inMemoryDatabase is a simple in-memory database.
@@ -12,7 +11,7 @@ type inMemoryDatabase struct {
 }
 
 // NewInMemoryDatabase creates a new InMemoryDatabase.
-func NewInMemoryDatabase() repository.Database {
+func NewInMemoryDatabase() Database {
 	return &inMemoryDatabase{
 		storage: make(map[string]data.Author),
 	}
