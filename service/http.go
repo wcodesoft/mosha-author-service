@@ -52,17 +52,22 @@ func encodeResponse(w http.ResponseWriter, response interface{}) {
 	}
 }
 
+func encodeError(w http.ResponseWriter, response error) {
+	w.WriteHeader(http.StatusInternalServerError)
+	encodeResponse(w, response.Error())
+}
+
 func (h HttpRouter) addAuthorHandler(w http.ResponseWriter, r *http.Request) {
 	var request data.Author
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-		encodeResponse(w, err)
+		encodeError(w, err)
 		return
 	}
 
 	resp, err := h.service.CreateAuthor(request)
 
 	if err != nil {
-		encodeResponse(w, err)
+		encodeError(w, err)
 		return
 	}
 
@@ -75,7 +80,7 @@ func (h HttpRouter) getAuthorHandler(w http.ResponseWriter, r *http.Request) {
 	resp, err := h.service.GetAuthor(id)
 
 	if err != nil {
-		encodeResponse(w, err)
+		encodeError(w, err)
 		return
 	}
 
@@ -88,7 +93,7 @@ func (h HttpRouter) deleteAuthorHandler(w http.ResponseWriter, r *http.Request) 
 	err := h.service.DeleteAuthor(id)
 
 	if err != nil {
-		encodeResponse(w, err)
+		encodeError(w, err)
 		return
 	}
 
@@ -98,14 +103,14 @@ func (h HttpRouter) deleteAuthorHandler(w http.ResponseWriter, r *http.Request) 
 func (h HttpRouter) updateAuthorHandler(w http.ResponseWriter, r *http.Request) {
 	var request data.Author
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-		encodeResponse(w, err)
+		encodeError(w, err)
 		return
 	}
 
 	resp, err := h.service.UpdateAuthor(request)
 
 	if err != nil {
-		encodeResponse(w, err)
+		encodeError(w, err)
 		return
 	}
 
