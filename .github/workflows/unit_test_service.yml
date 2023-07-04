@@ -3,10 +3,13 @@ name: Test Buso Golang library
 on:
   push:
     branches:
-      - 'main'
+      - '**'
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+
+env:
+  DEEPSOURCE_DSN: ${{ secrets.DEEPSOURCE_DSN }}
 
 jobs:
 
@@ -27,4 +30,21 @@ jobs:
       #       Run unit tests for the library
       #----------------------------------------------
       - name: Run unit tests on the Golang library
-        run: go test -v ./...
+        run: go test -coverprofile=cover.out -v ./...
+
+      #----------------------------------------------
+      #       Send test coverage to DeepSource
+      #----------------------------------------------
+      - name: Add git safe.directory for container
+        run: |
+          mkdir -p /home/runner/work/_temp/_github_home
+          printf "[safe]\ndirectory = /github/workspace" > /home/runner/work/_temp/_github_home/.gitconfig
+          
+
+      - name: Report test-coverage to DeepSource
+        run: |
+          # Install the CLI
+          curl https://deepsource.io/cli | sh
+          
+          # Send the report to DeepSource
+          ./bin/deepsource report --analyzer test-coverage --key go --value-file ./cover.out
