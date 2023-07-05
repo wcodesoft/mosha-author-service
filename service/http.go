@@ -27,12 +27,13 @@ func NewHttpRouter(s Service, serviceName string) HttpRouter {
 	}
 }
 
-func (h HttpRouter) Start(port string) {
+func (h HttpRouter) Start(port string) error {
 	log.Infof("Starting %s http on %s", h.serviceName, port)
 
 	if err := http.ListenAndServe(fmt.Sprintf(":%s", port), h.MakeHandler()); err != nil {
-		log.Fatalf("Unable to start service %q: %s", h.serviceName, err)
+		return fmt.Errorf("unable to start service %q: %s", h.serviceName, err)
 	}
+	return nil
 }
 
 func (h HttpRouter) MakeHandler() http.Handler {

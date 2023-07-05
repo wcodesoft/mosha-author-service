@@ -15,6 +15,7 @@ type mongoDatabase struct {
 	coll   *mongo.Collection
 }
 
+// AddAuthor adds an author to the mongo database.
 func (m mongoDatabase) AddAuthor(author data.Author) (string, error) {
 	result, err := m.coll.InsertOne(context.Background(), fromAuthor(author))
 	if err != nil {
@@ -24,6 +25,7 @@ func (m mongoDatabase) AddAuthor(author data.Author) (string, error) {
 	return fmt.Sprintf("%v", newId), nil
 }
 
+// ListAll returns all authors in the mongo database.
 func (m mongoDatabase) ListAll() []data.Author {
 	cursor, err := m.coll.Find(context.Background(), bson.D{})
 	if err != nil {
@@ -40,9 +42,10 @@ func (m mongoDatabase) ListAll() []data.Author {
 	return authors
 }
 
+// UpdateAuthor updates an author in the mongo database.
 func (m mongoDatabase) UpdateAuthor(author data.Author) (data.Author, error) {
 	filter := bson.D{{"_id", author.ID}}
-	opts := options.Update().SetHint(bson.D{{"_id", 1}})
+	opts := options.Update().SetHint(bson.D{{Key: "_id", Value: 1}})
 	update := bson.D{{"$set", fromAuthor(author)}}
 	_, err := m.coll.UpdateOne(context.Background(), filter, update, opts)
 	if err != nil {
@@ -51,9 +54,10 @@ func (m mongoDatabase) UpdateAuthor(author data.Author) (data.Author, error) {
 	return author, nil
 }
 
+// DeleteAuthor deletes an author from the mongo database.
 func (m mongoDatabase) DeleteAuthor(id string) error {
 	filter := bson.D{{"_id", id}}
-	opts := options.Delete().SetHint(bson.D{{"_id", 1}})
+	opts := options.Delete().SetHint(bson.D{{Key: "_id", Value: 1}})
 	result, err := m.coll.DeleteOne(context.Background(), filter, opts)
 	if result.DeletedCount == 0 {
 		return fmt.Errorf("author with id %s not found", id)
@@ -64,9 +68,10 @@ func (m mongoDatabase) DeleteAuthor(id string) error {
 	return nil
 }
 
+// GetAuthor returns an author from the mongo database.
 func (m mongoDatabase) GetAuthor(id string) (data.Author, error) {
 	filter := bson.D{{"_id", id}}
-	opts := options.FindOne().SetHint(bson.D{{"_id", 1}})
+	opts := options.FindOne().SetHint(bson.D{{Key: "_id", Value: 1}})
 	var result authorDB
 	err := m.coll.FindOne(context.Background(), filter, opts).Decode(&result)
 	if err != nil {
@@ -77,7 +82,7 @@ func (m mongoDatabase) GetAuthor(id string) (data.Author, error) {
 
 func (m mongoDatabase) AuthorExist(id string) bool {
 	filter := bson.D{{"_id", id}}
-	opts := options.FindOne().SetHint(bson.D{{"_id", 1}})
+	opts := options.FindOne().SetHint(bson.D{{Key: "_id", Value: 1}})
 	err := m.coll.FindOne(context.Background(), filter, opts).Err()
 	return err == nil
 }
