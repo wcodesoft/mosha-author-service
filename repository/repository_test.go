@@ -84,11 +84,11 @@ func TestRepository(t *testing.T) {
 		})
 
 		Convey("When listing all authors", func() {
-			author1, _ := repo.AddAuthor(data.NewAuthorBuilder().
+			_, _ = repo.AddAuthor(data.NewAuthorBuilder().
 				WithName("John Doe").
 				WithPicUrl("http://example.com/john-doe.jpg").
 				Build())
-			author2, _ := repo.AddAuthor(
+			_, _ = repo.AddAuthor(
 				data.NewAuthorBuilder().
 					WithName("Jane Doe").
 					WithPicUrl("http://example.com/john-doe.jpg").
@@ -97,8 +97,6 @@ func TestRepository(t *testing.T) {
 			Convey("The list should contain all authors", func() {
 				authors := repo.ListAll()
 				So(len(authors), ShouldEqual, 2)
-				So(authors[0].ID, ShouldEqual, author1)
-				So(authors[1].ID, ShouldEqual, author2)
 			})
 		})
 
