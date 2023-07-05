@@ -9,6 +9,7 @@ import (
 	"github.com/wcodesoft/mosha-author-service/data"
 	mhttp "github.com/wcodesoft/mosha-service-common/http"
 	"net/http"
+	"time"
 )
 
 type idResponse struct {
@@ -30,7 +31,13 @@ func NewHttpRouter(s Service, serviceName string) HttpRouter {
 func (h HttpRouter) Start(port string) error {
 	log.Infof("Starting %s http on %s", h.serviceName, port)
 
-	if err := http.ListenAndServe(fmt.Sprintf(":%s", port), h.MakeHandler()); err != nil {
+	server := &http.Server{
+		Addr:              fmt.Sprintf(":%s", port),
+		Handler:           h.MakeHandler(),
+		ReadHeaderTimeout: 3 * time.Second,
+	}
+
+	if err := server.ListenAndServe(); err != nil {
 		return fmt.Errorf("unable to start service %q: %s", h.serviceName, err)
 	}
 	return nil
