@@ -40,13 +40,17 @@ func main() {
 	go func() {
 		// Create a new HttpRouter.
 		router := service.NewHttpRouter(s, AuthorServiceName)
-		router.Start(httpPort)
+		if err := router.Start(httpPort); err != nil {
+			log.Fatal(err)
+		}
 		wg.Done()
 	}()
 
 	go func() {
 		grpcRouter := service.NewGrpcRouter(s, AuthorServiceName)
-		grpcRouter.Start(grpcPort)
+		if err := grpcRouter.Start(grpcPort); err != nil {
+			log.Fatal(err)
+		}
 		wg.Done()
 	}()
 

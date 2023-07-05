@@ -105,7 +105,7 @@ func NewGrpcRouter(s Service, serviceName string) GrpcRouter {
 	}
 }
 
-func (g GrpcRouter) Start(port string) {
+func (g GrpcRouter) Start(port string) error {
 	l := log.New(os.Stderr)
 	loggerOpts := []logging.Option{
 		logging.WithLogOnEvents(logging.StartCall, logging.FinishCall),
@@ -114,7 +114,7 @@ func (g GrpcRouter) Start(port string) {
 	log.Infof("Starting %s grpc on %s", g.serviceName, port)
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", port))
 	if err != nil {
-		log.Fatalf("Failed to listen: %v", err)
+		return fmt.Errorf("failed to listen: %v", err)
 	}
 	grpcServer := grpc.NewServer(
 		grpc.ChainUnaryInterceptor(
@@ -123,5 +123,8 @@ func (g GrpcRouter) Start(port string) {
 		),
 	)
 	pb.RegisterAuthorServiceServer(grpcServer, g.server)
-	grpcServer.Serve(lis)
+	if err := grpcServer.Serve(lis); err != nil {
+		return fmt.Errorf("failed to serve: %v", err)
+	}
+	return nil
 }
