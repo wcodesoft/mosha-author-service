@@ -10,7 +10,6 @@ type Database interface {
 	UpdateAuthor(author data.Author) (data.Author, error)
 	DeleteAuthor(id string) error
 	GetAuthor(id string) (data.Author, error)
-	AuthorExist(id string) bool
 }
 
 type authorDB struct {

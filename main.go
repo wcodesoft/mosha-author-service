@@ -29,7 +29,11 @@ func main() {
 	mongoHost := getEnv("MONGO_DB_HOST", defaultMongoHost)
 	grpcPort := getEnv("GRPC_PORT", defaultGrpcPort)
 
-	database := repository.NewMongoDatabase(mongoHost, defaultDatabase)
+	mongoClient, err := repository.NewMongoClient(mongoHost)
+	if err != nil {
+		log.Fatal(err)
+	}
+	database := repository.NewMongoDatabase(mongoClient, defaultDatabase)
 	repo := repository.New(database)
 	s := service.New(repo)
 

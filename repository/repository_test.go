@@ -99,21 +99,5 @@ func TestRepository(t *testing.T) {
 				So(len(authors), ShouldEqual, 2)
 			})
 		})
-
-		Convey("When checking if an author exists", func() {
-			authorID, _ := repo.AddAuthor(data.NewAuthorBuilder().
-				WithName("John Doe").
-				WithPicUrl("http://example.com/john-doe.jpg").
-				Build(),
-			)
-
-			Convey("The author should exist", func() {
-				So(repo.AuthorExist(authorID), ShouldBeTrue)
-			})
-
-			Convey("The author should not exist", func() {
-				So(repo.AuthorExist("123"), ShouldBeFalse)
-			})
-		})
 	})
 }

@@ -60,9 +60,3 @@ func (db *inMemoryDatabase) GetAuthor(id string) (data.Author, error) {
 	}
 	return db.storage[id], nil
 }
-
-// AuthorExist checks if an author exist in the database.
-func (db *inMemoryDatabase) AuthorExist(id string) bool {
-	_, ok := db.storage[id]
-	return ok
-}

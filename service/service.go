@@ -20,9 +20,6 @@ type Service interface {
 	// DeleteAuthor deletes an author by id.
 	DeleteAuthor(id string) error
 
-	// AuthorExist checks if an author exists by id.
-	AuthorExist(id string) bool
-
 	// UpdateAuthor updates an author.
 	UpdateAuthor(author data.Author) (data.Author, error)
 }
@@ -56,11 +53,6 @@ func (s *service) ListAll() []data.Author {
 // DeleteAuthor deletes an author by id.
 func (s *service) DeleteAuthor(id string) error {
 	return s.repo.DeleteAuthor(id)
-}
-
-// AuthorExist checks if an author exists by id.
-func (s *service) AuthorExist(id string) bool {
-	return s.repo.AuthorExist(id)
 }
 
 // UpdateAuthor updates an author.
