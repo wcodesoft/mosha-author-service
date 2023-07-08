@@ -1,7 +1,6 @@
 # mosha-author-service
 
-[![DeepSource](https://app.deepsource.com/gh/wcodesoft/mosha-author-service.svg/?label=active+issues&token=nviNNhLutptceoSk2YUDaoDm)](https://app.deepsource.com/gh/wcodesoft/mosha-author-service/?ref=repository-badge)
-[![DeepSource](https://app.deepsource.com/gh/wcodesoft/mosha-author-service.svg/?label=resolved+issues&token=nviNNhLutptceoSk2YUDaoDm)](https://app.deepsource.com/gh/wcodesoft/mosha-author-service/?ref=repository-badge)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/e648d9edadb04e779a3d17325c437813)](https://app.codacy.com/gh/wcodesoft/mosha-author-service/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 
 Author microservice used in Mosha.
 
