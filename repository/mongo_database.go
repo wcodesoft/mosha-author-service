@@ -27,7 +27,8 @@ func (m mongoDatabase) AddAuthor(author data.Author) (string, error) {
 
 // ListAll returns all authors in the mongo database.
 func (m mongoDatabase) ListAll() []data.Author {
-	cursor, err := m.coll.Find(context.Background(), bson.D{})
+	opts := options.Find().SetSort(bson.D{{Key: "name", Value: 1}})
+	cursor, err := m.coll.Find(context.Background(), bson.D{}, opts)
 	if err != nil {
 		return []data.Author{}
 	}
