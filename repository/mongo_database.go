@@ -29,7 +29,7 @@ func (m mongoDatabase) AddAuthor(author data.Author) (string, error) {
 func (m mongoDatabase) ListAll() []data.Author {
 	cursor, err := m.coll.Find(context.Background(), bson.D{})
 	if err != nil {
-		panic(err)
+		return []data.Author{}
 	}
 	var results []authorDB
 	if err = cursor.All(context.TODO(), &results); err != nil {

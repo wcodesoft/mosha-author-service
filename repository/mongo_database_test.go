@@ -115,29 +115,36 @@ func TestMongoDB(t *testing.T) {
 		})
 
 		mt.Run("Test ListAuthors", func(mt *mtest.T) {
-			first := mtest.CreateCursorResponse(
-				1,
-				"mosha.authors",
-				mtest.FirstBatch,
-				createMockedAuthor(),
-			)
-			second := mtest.CreateCursorResponse(
-				1,
-				"mosha.authors",
-				mtest.NextBatch,
-				bson.D{
-					{Key: "_id", Value: "ID2"},
-					{Key: "name", Value: "Name2"},
-					{Key: "picurl", Value: "PicURL2"},
-				},
-			)
-			killCursors := mtest.CreateCursorResponse(0, "mosha.authors", mtest.NextBatch)
-			mt.AddMockResponses(first, second, killCursors)
-
 			Convey("Test ListAuthors correctly", mt, func() {
+				first := mtest.CreateCursorResponse(
+					1,
+					"mosha.authors",
+					mtest.FirstBatch,
+					createMockedAuthor(),
+				)
+				second := mtest.CreateCursorResponse(
+					1,
+					"mosha.authors",
+					mtest.NextBatch,
+					bson.D{
+						{Key: "_id", Value: "ID2"},
+						{Key: "name", Value: "Name2"},
+						{Key: "picurl", Value: "PicURL2"},
+					},
+				)
+				killCursors := mtest.CreateCursorResponse(0, "mosha.authors", mtest.NextBatch)
+				mt.AddMockResponses(first, second, killCursors)
+
 				db := NewMongoDatabase(mt.Client, databaseName)
 				authors := db.ListAll()
 				So(len(authors), ShouldEqual, 2)
+			})
+
+			Convey("Test ListAuthors with error", mt, func() {
+				mt.AddMockResponses(bson.D{{Key: "ok", Value: 0}})
+				db := NewMongoDatabase(mt.Client, databaseName)
+				authors := db.ListAll()
+				So(len(authors), ShouldNotEqual, 3)
 			})
 		})
 	})
