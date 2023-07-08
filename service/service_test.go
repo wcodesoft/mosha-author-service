@@ -71,12 +71,5 @@ func TestService(t *testing.T) {
 			})
 		})
 
-		Convey("When checking if an author exists", func() {
-			authorId, _ := service.CreateAuthor(createJohnDoe())
-
-			Convey("The author should exist", func() {
-				So(service.AuthorExist(authorId), ShouldBeTrue)
-			})
-		})
 	})
 }

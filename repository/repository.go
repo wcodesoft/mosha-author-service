@@ -9,7 +9,6 @@ type Repository interface {
 	UpdateAuthor(author data.Author) (data.Author, error)
 	DeleteAuthor(id string) error
 	GetAuthor(id string) (data.Author, error)
-	AuthorExist(id string) bool
 }
 
 type repository struct {
@@ -36,10 +35,6 @@ func (s repository) DeleteAuthor(id string) error {
 
 func (s repository) GetAuthor(id string) (data.Author, error) {
 	return s.db.GetAuthor(id)
-}
-
-func (s repository) AuthorExist(id string) bool {
-	return s.db.AuthorExist(id)
 }
 
 // New creates a new repository.
