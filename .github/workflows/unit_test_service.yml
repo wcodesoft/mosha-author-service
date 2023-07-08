@@ -39,4 +39,4 @@ jobs:
         run: |
           # Install the CLI
           bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
-          --force-coverage-parser --project-token go -r ./cover.out
+          --force-coverage-parser go -r ./cover.out
