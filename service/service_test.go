@@ -1,19 +1,23 @@
 package service
 
 import (
+	"testing"
+
+	faker "github.com/brianvoe/gofakeit/v6"
+
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/wcodesoft/mosha-author-service/data"
 	"github.com/wcodesoft/mosha-author-service/repository"
-	"testing"
 )
 
-func createJohnDoe() data.Author {
-	return data.NewAuthorBuilder().
-		WithName("John Doe").
-		WithPicUrl("http://example.com/john-doe.jpg").
-		Build()
-}
 func TestService(t *testing.T) {
+
+	name := faker.Name()
+	picUrl := faker.ImageURL(100, 100)
+	author := data.NewAuthorBuilder().
+		WithName(name).
+		WithPicUrl(picUrl).
+		Build()
 
 	Convey("When creating a new service", t, func() {
 		database := repository.NewInMemoryDatabase()
@@ -25,7 +29,7 @@ func TestService(t *testing.T) {
 		})
 
 		Convey("When adding an author", func() {
-			authorId, _ := service.CreateAuthor(createJohnDoe())
+			authorId, _ := service.CreateAuthor(author)
 			Convey("The list of authors should contain the new author", func() {
 				So(len(service.ListAll()), ShouldEqual, 1)
 			})
@@ -33,13 +37,13 @@ func TestService(t *testing.T) {
 			Convey("Getting the author by ID should return the correct author", func() {
 				author, _ := service.GetAuthor(authorId)
 				So(author.ID, ShouldEqual, authorId)
-				So(author.Name, ShouldEqual, "John Doe")
-				So(author.PicURL, ShouldEqual, "http://example.com/john-doe.jpg")
+				So(author.Name, ShouldEqual, name)
+				So(author.PicURL, ShouldEqual, picUrl)
 			})
 		})
 
 		Convey("When deleting an author", func() {
-			authorId, _ := service.CreateAuthor(createJohnDoe())
+			authorId, _ := service.CreateAuthor(author)
 			err := service.DeleteAuthor(authorId)
 			Convey("The list of authors should be empty", func() {
 				So(len(service.ListAll()), ShouldEqual, 0)
@@ -56,18 +60,19 @@ func TestService(t *testing.T) {
 		})
 
 		Convey("When updating an author", func() {
-			authorId, _ := service.CreateAuthor(createJohnDoe())
+			authorId, _ := service.CreateAuthor(author)
 
 			Convey("Updating the author should return the updated author", func() {
+				newName := faker.Name()
 				author, _ := service.UpdateAuthor(data.NewAuthorBuilder().
-					WithName("John New Doe").
 					WithId(authorId).
-					WithPicUrl("http://example.com/john-doe.jpg").
+					WithName(newName).
+					WithPicUrl(picUrl).
 					Build(),
 				)
 				So(author.ID, ShouldEqual, authorId)
-				So(author.Name, ShouldNotEqual, "John Doe")
-				So(author.Name, ShouldEqual, "John New Doe")
+				So(author.Name, ShouldNotEqual, name)
+				So(author.Name, ShouldEqual, newName)
 			})
 		})
 

@@ -3,13 +3,17 @@ package service
 import (
 	"bytes"
 	"encoding/json"
-	. "github.com/smartystreets/goconvey/convey"
-	"github.com/wcodesoft/mosha-author-service/data"
-	"github.com/wcodesoft/mosha-author-service/repository"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	. "github.com/smartystreets/goconvey/convey"
+	"github.com/wcodesoft/mosha-author-service/data"
+	"github.com/wcodesoft/mosha-author-service/repository"
+
+	faker "github.com/brianvoe/gofakeit/v6"
 )
 
 func createHandler() http.Handler {
@@ -36,7 +40,7 @@ func TestHttp(t *testing.T) {
 
 	Convey("When adding valid author", t, func() {
 		handler := createHandler()
-		author := data.NewAuthorBuilder().WithId("123").WithName("John Doe").Build()
+		author := data.NewAuthorBuilder().WithId(faker.UUID()).WithName(faker.Name()).Build()
 		req := httptest.NewRequest("POST", "/api/v1/author", jsonReaderFactory(author))
 		rr := executeRequest(req, handler)
 
@@ -53,7 +57,7 @@ func TestHttp(t *testing.T) {
 
 	Convey("When adding invalid author", t, func() {
 		handler := createHandler()
-		author := data.NewAuthorBuilder().WithId("123").WithName("John Doe").Build()
+		author := data.NewAuthorBuilder().WithId(faker.UUID()).WithName(faker.Name()).Build()
 
 		Convey("When author already exist the response should be 500", func() {
 			req1 := httptest.NewRequest("POST", "/api/v1/author", jsonReaderFactory(author))
@@ -76,12 +80,12 @@ func TestHttp(t *testing.T) {
 
 	Convey("When getting author", t, func() {
 		handler := createHandler()
-		author := data.NewAuthorBuilder().WithId("123").WithName("John Doe").Build()
+		author := data.NewAuthorBuilder().WithId(faker.UUID()).WithName(faker.Name()).Build()
 		req := httptest.NewRequest("POST", "/api/v1/author", jsonReaderFactory(author))
 		executeRequest(req, handler)
 
 		Convey("When author exist the response should be 200", func() {
-			req := httptest.NewRequest("GET", "/api/v1/author/123", nil)
+			req := httptest.NewRequest("GET", fmt.Sprintf("/api/v1/author/%s", author.ID), nil)
 			rr := executeRequest(req, handler)
 			So(rr.Code, ShouldEqual, http.StatusOK)
 		})
@@ -95,12 +99,12 @@ func TestHttp(t *testing.T) {
 
 	Convey("When deleting author", t, func() {
 		handler := createHandler()
-		author := data.NewAuthorBuilder().WithId("123").WithName("John Doe").Build()
+		author := data.NewAuthorBuilder().WithId(faker.UUID()).WithName(faker.Name()).Build()
 		req := httptest.NewRequest("POST", "/api/v1/author", jsonReaderFactory(author))
 		executeRequest(req, handler)
 
 		Convey("When author exist the response should be 200", func() {
-			req := httptest.NewRequest("POST", "/api/v1/author/delete/123", nil)
+			req := httptest.NewRequest("POST", fmt.Sprintf("/api/v1/author/delete/%s", author.ID), nil)
 			rr := executeRequest(req, handler)
 			So(rr.Code, ShouldEqual, http.StatusOK)
 		})
@@ -115,8 +119,8 @@ func TestHttp(t *testing.T) {
 
 	Convey("When listing authors", t, func() {
 		handler := createHandler()
-		author := data.NewAuthorBuilder().WithId("123").WithName("John Doe").Build()
-		author2 := data.NewAuthorBuilder().WithId("456").WithName("John Doe").Build()
+		author := data.NewAuthorBuilder().WithId(faker.UUID()).WithName(faker.Name()).Build()
+		author2 := data.NewAuthorBuilder().WithId(faker.UUID()).WithName(faker.Name()).Build()
 
 		req := httptest.NewRequest("POST", "/api/v1/author", jsonReaderFactory(author))
 		req2 := httptest.NewRequest("POST", "/api/v1/author", jsonReaderFactory(author2))
@@ -133,23 +137,25 @@ func TestHttp(t *testing.T) {
 
 	Convey("When updating author", t, func() {
 		handler := createHandler()
-		author := data.NewAuthorBuilder().WithId("123").WithName("John Doe").Build()
+		id := faker.UUID()
+		author := data.NewAuthorBuilder().WithId(id).WithName(faker.Name()).Build()
 		req := httptest.NewRequest("POST", "/api/v1/author", jsonReaderFactory(author))
 		executeRequest(req, handler)
 
 		Convey("When author exist the response should be 200", func() {
-			author := data.NewAuthorBuilder().WithId("123").WithName("Jane Doe").Build()
+			newName := faker.Name()
+			author := data.NewAuthorBuilder().WithId(id).WithName(newName).Build()
 			req := httptest.NewRequest("POST", "/api/v1/author/update", jsonReaderFactory(author))
 			rr := executeRequest(req, handler)
 			So(rr.Code, ShouldEqual, http.StatusOK)
 			parsedAuthor := data.NewAuthorBuilder().Build()
 			json.NewDecoder(rr.Body).Decode(&parsedAuthor)
-			So(parsedAuthor.Name, ShouldEqual, "Jane Doe")
-			So(parsedAuthor.ID, ShouldEqual, "123")
+			So(parsedAuthor.Name, ShouldEqual, newName)
+			So(parsedAuthor.ID, ShouldEqual, id)
 		})
 
 		Convey("When author does not exist the response should be 500", func() {
-			author := data.NewAuthorBuilder().WithId("426").WithName("Jane Doe").Build()
+			author := data.NewAuthorBuilder().WithId("426").WithName(faker.Name()).Build()
 			req := httptest.NewRequest("POST", "/api/v1/author/update", jsonReaderFactory(author))
 			rr := executeRequest(req, handler)
 			So(rr.Code, ShouldEqual, http.StatusInternalServerError)

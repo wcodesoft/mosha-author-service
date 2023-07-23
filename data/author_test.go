@@ -1,8 +1,10 @@
 package data
 
 import (
-	. "github.com/smartystreets/goconvey/convey"
 	"testing"
+
+	faker "github.com/brianvoe/gofakeit/v6"
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestAuthor(t *testing.T) {
@@ -26,18 +28,20 @@ func TestAuthor(t *testing.T) {
 		})
 
 		Convey("When building an author with a specific name", func() {
-			author := builder.WithName("John Doe").Build()
+			name := faker.Name()
+			author := builder.WithName(name).Build()
 
 			Convey("The author should be initialized with the given name", func() {
-				So(author.Name, ShouldEqual, "John Doe")
+				So(author.Name, ShouldEqual, name)
 			})
 		})
 
 		Convey("When building an author with a specific picUrl", func() {
-			author := builder.WithPicUrl("http://example.com/pic.jpg").Build()
+			picUrl := faker.ImageURL(100, 100)
+			author := builder.WithPicUrl(picUrl).Build()
 
 			Convey("The author should be initialized with the given picUrl", func() {
-				So(author.PicURL, ShouldEqual, "http://example.com/pic.jpg")
+				So(author.PicURL, ShouldEqual, picUrl)
 			})
 		})
 
