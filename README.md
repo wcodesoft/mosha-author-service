@@ -35,3 +35,10 @@ protoc --go_out=. --go_opt=paths=source_relative \
   --go-grpc_out=. --go-grpc_opt=paths=source_relative \
   proto/author.proto
 ```
+
+## Tests
+
+Unit tests are written using https://smartystreets.github.io/goconvey/ library in go for more fluent test development. All
+fake data in tests is generated using https://github.com/brianvoe/gofakeit/ library.
+
+

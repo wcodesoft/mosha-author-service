@@ -1,9 +1,11 @@
 package repository
 
 import (
+	"testing"
+
+	faker "github.com/brianvoe/gofakeit/v6"
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/wcodesoft/mosha-author-service/data"
-	"testing"
 )
 
 func TestRepository(t *testing.T) {
@@ -11,13 +13,16 @@ func TestRepository(t *testing.T) {
 	Convey("Given a new repository", t, func() {
 		db := NewInMemoryDatabase()
 		repo := New(db)
+		fakeId := faker.UUID()
+		name := faker.Name()
+		picUrl := faker.ImageURL(100, 100)
 
 		Convey("When adding an author", func() {
 			builder := data.
 				NewAuthorBuilder().
-				WithId("123").
-				WithName("John Doe").
-				WithPicUrl("http://example.com/john-doe.jpg")
+				WithId(fakeId).
+				WithName(name).
+				WithPicUrl(picUrl)
 			author := builder.Build()
 			id, _ := repo.AddAuthor(author)
 
@@ -31,28 +36,29 @@ func TestRepository(t *testing.T) {
 			})
 
 			Convey("Getting the author by ID should return the correct author", func() {
-				author, _ := repo.GetAuthor(id)
-				So(author.ID, ShouldEqual, "123")
-				So(author.Name, ShouldEqual, "John Doe")
-				So(author.PicURL, ShouldEqual, "http://example.com/john-doe.jpg")
+				author, _ := repo.GetAuthor(fakeId)
+				So(author.ID, ShouldEqual, fakeId)
+				So(author.Name, ShouldEqual, name)
+				So(author.PicURL, ShouldEqual, picUrl)
 			})
 
 			Convey("Updating the author should return the updated author", func() {
+				newName := faker.Name()
 				author, _ := repo.UpdateAuthor(
 					builder.
 						WithId(id).
-						WithName("John New Doe").
-						WithPicUrl("http://example.com/john-doe.jpg").
+						WithName(newName).
+						WithPicUrl(picUrl).
 						Build(),
 				)
-				So(author.ID, ShouldEqual, "123")
-				So(author.Name, ShouldNotEqual, "John Doe")
-				So(author.Name, ShouldEqual, "John New Doe")
+				So(author.ID, ShouldEqual, id)
+				So(author.Name, ShouldNotEqual, name)
+				So(author.Name, ShouldEqual, newName)
 			})
 		})
 
 		Convey("When deleting an author", func() {
-			authorID, _ := repo.AddAuthor(data.NewAuthorBuilder().WithName("John Doe").Build())
+			authorID, _ := repo.AddAuthor(data.NewAuthorBuilder().WithName(name).Build())
 
 			Convey("Deleting the author should remove it from the list", func() {
 				if err := repo.DeleteAuthor(authorID); err != nil {
@@ -85,13 +91,13 @@ func TestRepository(t *testing.T) {
 
 		Convey("When listing all authors", func() {
 			_, _ = repo.AddAuthor(data.NewAuthorBuilder().
-				WithName("John Doe").
-				WithPicUrl("http://example.com/john-doe.jpg").
+				WithName(name).
+				WithPicUrl(picUrl).
 				Build())
 			_, _ = repo.AddAuthor(
 				data.NewAuthorBuilder().
-					WithName("Jane Doe").
-					WithPicUrl("http://example.com/john-doe.jpg").
+					WithName(faker.Name()).
+					WithPicUrl(faker.ImageURL(100, 100)).
 					Build())
 
 			Convey("The list should contain all authors", func() {
