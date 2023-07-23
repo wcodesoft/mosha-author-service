@@ -38,7 +38,11 @@ protoc --go_out=. --go_opt=paths=source_relative \
 
 ## Tests
 
-Unit tests are written using https://smartystreets.github.io/goconvey/ library in go for more fluent test development. All
-fake data in tests is generated using https://github.com/brianvoe/gofakeit/ library.
+Unit tests are written using [goconvey](https://smartystreets.github.io/goconvey/) library in go for more fluent test development. All
+fake data in tests is generated using [gofakeit](https://github.com/brianvoe/gofakeit/) library.
 
+To run all tests execute the following command in the root folder:
 
+```bash
+go test -v ./...
+```
