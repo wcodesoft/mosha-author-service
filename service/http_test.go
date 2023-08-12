@@ -20,7 +20,8 @@ func createHandler() http.Handler {
 	memoryDatabase := repository.NewInMemoryDatabase()
 	repo := repository.New(memoryDatabase)
 	service := New(repo)
-	handler := NewHttpRouter(service, "AuthorService").MakeHandler()
+	router := NewHttpRouter(service, "AuthorService")
+	handler := router.MakeHandler()
 	return handler
 }
 

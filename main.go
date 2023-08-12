@@ -4,6 +4,7 @@ import (
 	"github.com/charmbracelet/log"
 	"github.com/wcodesoft/mosha-author-service/repository"
 	"github.com/wcodesoft/mosha-author-service/service"
+	mdb "github.com/wcodesoft/mosha-service-common/database"
 	"os"
 	"sync"
 )
@@ -29,11 +30,12 @@ func main() {
 	mongoHost := getEnv("MONGO_DB_HOST", defaultMongoHost)
 	grpcPort := getEnv("GRPC_PORT", defaultGrpcPort)
 
-	mongoClient, err := repository.NewMongoClient(mongoHost)
+	mongoClient, err := mdb.NewMongoClient(mongoHost)
 	if err != nil {
 		log.Fatal(err)
 	}
-	database := repository.NewMongoDatabase(mongoClient, defaultDatabase)
+	connection := mdb.NewMongoConnection(mongoClient, defaultDatabase, "authors")
+	database := repository.NewMongoDatabase(connection)
 	repo := repository.New(database)
 	s := service.New(repo)
 

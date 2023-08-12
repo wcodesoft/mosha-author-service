@@ -6,6 +6,7 @@ import (
 	faker "github.com/brianvoe/gofakeit/v6"
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/wcodesoft/mosha-author-service/data"
+	mdb "github.com/wcodesoft/mosha-service-common/database"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/integration/mtest"
 )
@@ -30,9 +31,10 @@ func TestMongoDB(t *testing.T) {
 		defer mt.Close()
 
 		mt.Run("Test AddAuthor", func(mt *mtest.T) {
+			conn := mdb.NewMongoConnection(mt.Client, databaseName, "author")
+			db := NewMongoDatabase(conn)
 			mt.AddMockResponses(bson.D{{Key: "ok", Value: 1}, {Key: "_id", Value: id}})
 			Convey("Test AddAuthor correctly", mt, func() {
-				db := NewMongoDatabase(mt.Client, databaseName)
 				author := data.Author{ID: id, Name: name, PicURL: picUrl}
 				id, err := db.AddAuthor(author)
 				So(err, ShouldBeNil)
@@ -41,7 +43,6 @@ func TestMongoDB(t *testing.T) {
 
 			mt.AddMockResponses(bson.D{{Key: "ok", Value: 0}, {Key: "_id", Value: id}})
 			Convey("Test AddAuthor with error", mt, func() {
-				db := NewMongoDatabase(mt.Client, databaseName)
 				author := data.Author{ID: id, Name: name, PicURL: picUrl}
 				id, err := db.AddAuthor(author)
 				So(err, ShouldNotBeNil)
@@ -50,7 +51,8 @@ func TestMongoDB(t *testing.T) {
 		})
 
 		mt.Run("Test GetAuthor", func(mt *mtest.T) {
-
+			conn := mdb.NewMongoConnection(mt.Client, databaseName, "author")
+			db := NewMongoDatabase(conn)
 			mockFind := mtest.CreateCursorResponse(
 				1,
 				"mosha.authors",
@@ -60,7 +62,6 @@ func TestMongoDB(t *testing.T) {
 			killCursors := mtest.CreateCursorResponse(0, "mosha.authors", mtest.NextBatch)
 			mt.AddMockResponses(mockFind, killCursors)
 			Convey("Test GetAuthor correctly", mt, func() {
-				db := NewMongoDatabase(mt.Client, databaseName)
 				author, err := db.GetAuthor(id)
 				So(err, ShouldBeNil)
 				So(author.ID, ShouldEqual, id)
@@ -69,7 +70,6 @@ func TestMongoDB(t *testing.T) {
 			})
 
 			Convey("Test GetAuthor with error", mt, func() {
-				db := NewMongoDatabase(mt.Client, databaseName)
 				author, err := db.GetAuthor(id)
 				So(err, ShouldNotBeNil)
 				So(author.ID, ShouldEqual, "")
@@ -79,28 +79,29 @@ func TestMongoDB(t *testing.T) {
 		})
 
 		mt.Run("Test DeleteAuthor", func(mt *mtest.T) {
+			conn := mdb.NewMongoConnection(mt.Client, databaseName, "author")
+			db := NewMongoDatabase(conn)
 			Convey("Test DeleteAuthor correctly", mt, func() {
 				mt.AddMockResponses(bson.D{{Key: "ok", Value: 1}, {Key: "acknowledged", Value: true}, {Key: "n", Value: 1}})
-				db := NewMongoDatabase(mt.Client, databaseName)
 				err := db.DeleteAuthor(id)
 				So(err, ShouldBeNil)
 			})
 
 			Convey("Test DeleteAuthor with error", mt, func() {
 				mt.AddMockResponses(bson.D{{Key: "ok", Value: 1}, {Key: "acknowledged", Value: true}, {Key: "n", Value: 0}})
-				db := NewMongoDatabase(mt.Client, databaseName)
 				err := db.DeleteAuthor("InvalidID")
 				So(err, ShouldNotBeNil)
 			})
 		})
 
 		mt.Run("Test UpdateAuthor", func(mt *mtest.T) {
+			conn := mdb.NewMongoConnection(mt.Client, databaseName, "author")
+			db := NewMongoDatabase(conn)
 			mt.AddMockResponses(bson.D{
 				{Key: "ok", Value: 1},
 				{Key: "value", Value: createMockedAuthor(id, name, picUrl)}})
 
 			Convey("Test UpdateAuthor correctly", mt, func() {
-				db := NewMongoDatabase(mt.Client, databaseName)
 				newName := faker.Name()
 				author := data.Author{ID: id, Name: newName, PicURL: picUrl}
 				newAuthor, err := db.UpdateAuthor(author)
@@ -112,7 +113,6 @@ func TestMongoDB(t *testing.T) {
 			})
 
 			Convey("Test UpdateAuthor with error", mt, func() {
-				db := NewMongoDatabase(mt.Client, databaseName)
 				newName := faker.Name()
 				author := data.Author{ID: "InvallidID", Name: newName, PicURL: picUrl}
 				newAuthor, err := db.UpdateAuthor(author)
@@ -124,6 +124,8 @@ func TestMongoDB(t *testing.T) {
 		})
 
 		mt.Run("Test ListAuthors", func(mt *mtest.T) {
+			conn := mdb.NewMongoConnection(mt.Client, databaseName, "author")
+			db := NewMongoDatabase(conn)
 			Convey("Test ListAuthors correctly", mt, func() {
 				otherName := faker.Name()
 				otherId := faker.UUID()
@@ -142,14 +144,12 @@ func TestMongoDB(t *testing.T) {
 				killCursors := mtest.CreateCursorResponse(0, "mosha.authors", mtest.NextBatch)
 				mt.AddMockResponses(first, second, killCursors)
 
-				db := NewMongoDatabase(mt.Client, databaseName)
 				authors := db.ListAll()
 				So(len(authors), ShouldEqual, 2)
 			})
 
 			Convey("Test ListAuthors with error", mt, func() {
 				mt.AddMockResponses(bson.D{{Key: "ok", Value: 0}})
-				db := NewMongoDatabase(mt.Client, databaseName)
 				authors := db.ListAll()
 				So(len(authors), ShouldNotEqual, 3)
 			})
