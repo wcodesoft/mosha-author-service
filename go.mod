@@ -7,7 +7,6 @@ require (
 	github.com/charmbracelet/log v0.2.3
 	github.com/go-chi/chi/v5 v5.0.10
 	github.com/google/uuid v1.3.0
-	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.0.0-rc.5
 	github.com/smartystreets/goconvey v1.8.1
 	github.com/wcodesoft/mosha-service-common v0.0.3
 	go.mongodb.org/mongo-driver v1.12.1
