@@ -28,7 +28,7 @@ func NewHttpRouter(s Service, serviceName string) HttpRouter {
 	}
 }
 
-func (h HttpRouter) Start(port string) error {
+func (h *HttpRouter) Start(port string) error {
 	log.Infof("Starting %s http on %s", h.serviceName, port)
 
 	server := &http.Server{
@@ -43,7 +43,7 @@ func (h HttpRouter) Start(port string) error {
 	return nil
 }
 
-func (h HttpRouter) MakeHandler() http.Handler {
+func (h *HttpRouter) MakeHandler() http.Handler {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Get("/api/v1/author/all", h.listAllHandler)
@@ -55,7 +55,7 @@ func (h HttpRouter) MakeHandler() http.Handler {
 	return r
 }
 
-func (h HttpRouter) addAuthorHandler(w http.ResponseWriter, r *http.Request) {
+func (h *HttpRouter) addAuthorHandler(w http.ResponseWriter, r *http.Request) {
 	var request data.Author
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		mhttp.EncodeError(w, err)
@@ -72,7 +72,7 @@ func (h HttpRouter) addAuthorHandler(w http.ResponseWriter, r *http.Request) {
 	mhttp.EncodeResponse(w, idResponse{ID: resp})
 }
 
-func (h HttpRouter) createGetAuthorHandler(w http.ResponseWriter, r *http.Request) {
+func (h *HttpRouter) createGetAuthorHandler(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
 	resp, err := h.service.GetAuthor(id)
@@ -85,7 +85,7 @@ func (h HttpRouter) createGetAuthorHandler(w http.ResponseWriter, r *http.Reques
 	mhttp.EncodeResponse(w, resp)
 }
 
-func (h HttpRouter) deleteAuthorHandler(w http.ResponseWriter, r *http.Request) {
+func (h *HttpRouter) deleteAuthorHandler(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
 	err := h.service.DeleteAuthor(id)
@@ -98,7 +98,7 @@ func (h HttpRouter) deleteAuthorHandler(w http.ResponseWriter, r *http.Request) 
 	mhttp.EncodeResponse(w, idResponse{ID: id})
 }
 
-func (h HttpRouter) updateAuthorHandler(w http.ResponseWriter, r *http.Request) {
+func (h *HttpRouter) updateAuthorHandler(w http.ResponseWriter, r *http.Request) {
 	var request data.Author
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		mhttp.EncodeError(w, err)
@@ -115,7 +115,7 @@ func (h HttpRouter) updateAuthorHandler(w http.ResponseWriter, r *http.Request) 
 	mhttp.EncodeResponse(w, resp)
 }
 
-func (h HttpRouter) listAllHandler(w http.ResponseWriter, _ *http.Request) {
+func (h *HttpRouter) listAllHandler(w http.ResponseWriter, _ *http.Request) {
 	resp := h.service.ListAll()
 
 	mhttp.EncodeResponse(w, resp)
