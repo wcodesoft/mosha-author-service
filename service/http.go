@@ -2,80 +2,66 @@ package service
 
 import (
 	"encoding/json"
-	"fmt"
-	"github.com/charmbracelet/log"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/wcodesoft/mosha-author-service/data"
 	mhttp "github.com/wcodesoft/mosha-service-common/http"
+
 	"net/http"
-	"time"
 )
 
-type idResponse struct {
-	ID string `json:"id"`
+// AuthorService represents the service interface.
+type AuthorService struct {
+	Service Service
+	Name    string
+	Port    string
+	mhttp.MoshaHttpService
 }
 
-type HttpRouter struct {
-	service     Service
-	serviceName string
+// GetName returns the name of the service.
+func (as *AuthorService) GetName() string {
+	return as.Name
 }
 
-func NewHttpRouter(s Service, serviceName string) HttpRouter {
-	return HttpRouter{
-		service:     s,
-		serviceName: serviceName,
-	}
+// GetPort returns the port of the service.
+func (as *AuthorService) GetPort() string {
+	return as.Port
 }
 
-func (h *HttpRouter) Start(port string) error {
-	log.Infof("Starting %s http on %s", h.serviceName, port)
-
-	server := &http.Server{
-		Addr:              fmt.Sprintf(":%s", port),
-		Handler:           h.MakeHandler(),
-		ReadHeaderTimeout: 3 * time.Second,
-	}
-
-	if err := server.ListenAndServe(); err != nil {
-		return fmt.Errorf("unable to start service %q: %s", h.serviceName, err)
-	}
-	return nil
-}
-
-func (h *HttpRouter) MakeHandler() http.Handler {
+// MakeHandler creates a handler for the service.
+func (as *AuthorService) MakeHandler() http.Handler {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
-	r.Get("/api/v1/author/all", h.listAllHandler)
-	r.Get("/api/v1/author/{id}", h.createGetAuthorHandler)
-	r.Post("/api/v1/author/delete/{id}", h.deleteAuthorHandler)
-	r.Post("/api/v1/author/update", h.updateAuthorHandler)
-	r.Post("/api/v1/author", h.addAuthorHandler)
+	r.Get("/api/v1/author/all", as.listAllHandler)
+	r.Get("/api/v1/author/{id}", as.createGetAuthorHandler)
+	r.Post("/api/v1/author/delete/{id}", as.deleteAuthorHandler)
+	r.Post("/api/v1/author/update", as.updateAuthorHandler)
+	r.Post("/api/v1/author", as.addAuthorHandler)
 
 	return r
 }
 
-func (h *HttpRouter) addAuthorHandler(w http.ResponseWriter, r *http.Request) {
+func (as *AuthorService) addAuthorHandler(w http.ResponseWriter, r *http.Request) {
 	var request data.Author
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		mhttp.EncodeError(w, err)
 		return
 	}
 
-	resp, err := h.service.CreateAuthor(request)
+	resp, err := as.Service.CreateAuthor(request)
 
 	if err != nil {
 		mhttp.EncodeError(w, err)
 		return
 	}
 
-	mhttp.EncodeResponse(w, idResponse{ID: resp})
+	mhttp.EncodeResponse(w, mhttp.IdResponse{ID: resp})
 }
 
-func (h *HttpRouter) createGetAuthorHandler(w http.ResponseWriter, r *http.Request) {
+func (as *AuthorService) createGetAuthorHandler(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
-	resp, err := h.service.GetAuthor(id)
+	resp, err := as.Service.GetAuthor(id)
 
 	if err != nil {
 		mhttp.EncodeError(w, err)
@@ -85,27 +71,27 @@ func (h *HttpRouter) createGetAuthorHandler(w http.ResponseWriter, r *http.Reque
 	mhttp.EncodeResponse(w, resp)
 }
 
-func (h *HttpRouter) deleteAuthorHandler(w http.ResponseWriter, r *http.Request) {
+func (as *AuthorService) deleteAuthorHandler(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
-	err := h.service.DeleteAuthor(id)
+	err := as.Service.DeleteAuthor(id)
 
 	if err != nil {
 		mhttp.EncodeError(w, err)
 		return
 	}
 
-	mhttp.EncodeResponse(w, idResponse{ID: id})
+	mhttp.EncodeResponse(w, mhttp.IdResponse{ID: id})
 }
 
-func (h *HttpRouter) updateAuthorHandler(w http.ResponseWriter, r *http.Request) {
+func (as *AuthorService) updateAuthorHandler(w http.ResponseWriter, r *http.Request) {
 	var request data.Author
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		mhttp.EncodeError(w, err)
 		return
 	}
 
-	resp, err := h.service.UpdateAuthor(request)
+	resp, err := as.Service.UpdateAuthor(request)
 
 	if err != nil {
 		mhttp.EncodeError(w, err)
@@ -115,8 +101,8 @@ func (h *HttpRouter) updateAuthorHandler(w http.ResponseWriter, r *http.Request)
 	mhttp.EncodeResponse(w, resp)
 }
 
-func (h *HttpRouter) listAllHandler(w http.ResponseWriter, _ *http.Request) {
-	resp := h.service.ListAll()
+func (as *AuthorService) listAllHandler(w http.ResponseWriter, _ *http.Request) {
+	resp := as.Service.ListAll()
 
 	mhttp.EncodeResponse(w, resp)
 }

@@ -12,16 +12,22 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/wcodesoft/mosha-author-service/data"
 	"github.com/wcodesoft/mosha-author-service/repository"
+	mhttp "github.com/wcodesoft/mosha-service-common/http"
 
 	faker "github.com/brianvoe/gofakeit/v6"
 )
 
 func createHandler() http.Handler {
 	memoryDatabase := repository.NewInMemoryDatabase()
-	repo := repository.New(memoryDatabase)
+	clientRepo := repository.NewFakeClientRepository()
+	repo := repository.New(memoryDatabase, clientRepo)
 	service := New(repo)
-	router := NewHttpRouter(service, "AuthorService")
-	handler := router.MakeHandler()
+	hs := AuthorService{
+		Service: service,
+		Port:    "8080",
+		Name:    "QuoteService",
+	}
+	handler := hs.MakeHandler()
 	return handler
 }
 
@@ -50,7 +56,7 @@ func TestHttp(t *testing.T) {
 		})
 
 		Convey("The response should contain the author ID", func() {
-			var authorResponse idResponse
+			var authorResponse mhttp.IdResponse
 			_ = json.NewDecoder(rr.Body).Decode(&authorResponse)
 			So(authorResponse.ID, ShouldEqual, author.ID)
 		})

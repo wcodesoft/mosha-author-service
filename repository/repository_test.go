@@ -12,7 +12,8 @@ func TestRepository(t *testing.T) {
 
 	Convey("Given a new repository", t, func() {
 		db := NewInMemoryDatabase()
-		repo := New(db)
+		clientRepository := NewFakeClientRepository()
+		repo := New(db, clientRepository)
 		fakeId := faker.UUID()
 		name := faker.Name()
 		picUrl := faker.ImageURL(100, 100)
