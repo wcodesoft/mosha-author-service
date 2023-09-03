@@ -4,16 +4,26 @@ import (
 	"github.com/wcodesoft/mosha-quote-service/data"
 )
 
-type fakeClientRepository struct {
-	quotes []data.Quote
+type FakeClientRepository struct {
+	quotes   []data.Quote
+	retValue bool
+	retError error
+	ClientRepository
 }
 
-func (f fakeClientRepository) DeleteAuthorQuotes(_ string) (bool, error) {
-	return true, nil
+func (f *FakeClientRepository) DeleteAuthorQuotes(_ string) (bool, error) {
+	return f.retValue, f.retError
 }
 
-func NewFakeClientRepository() ClientRepository {
-	return &fakeClientRepository{
-		quotes: []data.Quote{},
+func (f *FakeClientRepository) SetDeleteAuthorQuotesReturn(value bool, err error) {
+	f.retValue = value
+	f.retError = err
+}
+
+func NewFakeClientRepository() *FakeClientRepository {
+	return &FakeClientRepository{
+		quotes:   []data.Quote{},
+		retValue: true,
+		retError: nil,
 	}
 }
