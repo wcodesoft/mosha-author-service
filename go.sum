@@ -57,8 +57,8 @@ github.com/smartystreets/goconvey v1.8.1/go.mod h1:+/u4qLyY6x1jReYOp7GOM2FSt8aP9
 github.com/stretchr/testify v1.8.4 h1:CcVxjf3Q8PM0mHUKJCdn+eZZtm5yQwehR5yeSVQQcUk=
 github.com/wcodesoft/mosha-quote-service v0.1.0 h1:aW1QSl0146+5AOLHOoCTpXVIJ3tGA4YSt7aVRq82Jq8=
 github.com/wcodesoft/mosha-quote-service v0.1.0/go.mod h1:qhLjxWAncwwevbWFDc4WukQ2uYWnWCtIlyZQxWo6tQE=
-github.com/wcodesoft/mosha-service-common v0.0.9 h1:nTQaSOEuDS+tAXYO3U8eCT8MVG00vkl8giDm/5V9DJg=
-github.com/wcodesoft/mosha-service-common v0.0.9/go.mod h1:hPNn94cRwS0e2b8Kp134GTfx3+qTDQaT+mU66YnXAYE=
+github.com/wcodesoft/mosha-service-common v0.0.10 h1:BegnBRqycaRqvIh5A4XiDBH5x6eEyMsPdmksRFh5nzk=
+github.com/wcodesoft/mosha-service-common v0.0.10/go.mod h1:hPNn94cRwS0e2b8Kp134GTfx3+qTDQaT+mU66YnXAYE=
 github.com/xdg-go/pbkdf2 v1.0.0 h1:Su7DPu48wXMwC3bs7MCNG+z4FhcyEuz5dlvchbq0B0c=
 github.com/xdg-go/pbkdf2 v1.0.0/go.mod h1:jrpuAogTd400dnrH08LKmI/xc1MbPOebTwRqcT5RDeI=
 github.com/xdg-go/scram v1.1.2 h1:FHX5I5B4i4hKRVRBCFRxq1iQRej7WO3hhBuJf+UUySY=

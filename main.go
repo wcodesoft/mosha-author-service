@@ -5,6 +5,7 @@ import (
 	"github.com/wcodesoft/mosha-author-service/repository"
 	"github.com/wcodesoft/mosha-author-service/service"
 	mdb "github.com/wcodesoft/mosha-service-common/database"
+	mgrpc "github.com/wcodesoft/mosha-service-common/grpc"
 	mhttp "github.com/wcodesoft/mosha-service-common/http"
 	"os"
 	"sync"
@@ -33,9 +34,14 @@ func main() {
 	grpcPort := getEnv("GRPC_PORT", defaultGrpcPort)
 	quoteServiceAddress := getEnv("QUOTE_SERVICE_ADDRESS", quoteGrpcAddress)
 
-	clientsRepository := repository.NewClientRepository(repository.ClientsAddress{
-		QuoteServiceAddress: quoteServiceAddress,
-	})
+	quoteGrpcClientInfo := mgrpc.ClientInfo{
+		Name:    "QuoteService",
+		Address: quoteServiceAddress,
+	}
+	clientsRepository, err := repository.NewClientRepository(quoteGrpcClientInfo)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	mongoClient, err := mdb.NewMongoClient(mongoHost)
 	if err != nil {
