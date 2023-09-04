@@ -11,6 +11,7 @@ FROM scratch
 ENV HTTP_PORT 8180
 ENV GRPC_PORT 8181
 ENV MONGO_DB_HOST "mongodb://localhost:27017"
+ENV QUOTE_SERVICE_ADDRESS "localhost:8281"
 
 WORKDIR /bin
 COPY --from=builder /app/mosha-author-service/app .

@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
-	pb "github.com/wcodesoft/mosha-author-service/proto"
 	"github.com/wcodesoft/mosha-author-service/repository"
+	pb "github.com/wcodesoft/mosha-service-common/protos/authorservice"
 	"google.golang.org/protobuf/types/known/emptypb"
 
 	faker "github.com/brianvoe/gofakeit/v6"
@@ -14,7 +14,8 @@ import (
 
 func createGrpcRouter() GrpcRouter {
 	memoryDatabase := repository.NewInMemoryDatabase()
-	repo := repository.New(memoryDatabase)
+	clientRepo := repository.NewFakeClientRepository()
+	repo := repository.New(memoryDatabase, clientRepo)
 	service := New(repo)
 	router := NewGrpcRouter(service, "AuthorService")
 	return router

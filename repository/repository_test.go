@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"testing"
 
 	faker "github.com/brianvoe/gofakeit/v6"
@@ -12,7 +13,8 @@ func TestRepository(t *testing.T) {
 
 	Convey("Given a new repository", t, func() {
 		db := NewInMemoryDatabase()
-		repo := New(db)
+		clientRepository := NewFakeClientRepository()
+		repo := New(db, clientRepository)
 		fakeId := faker.UUID()
 		name := faker.Name()
 		picUrl := faker.ImageURL(100, 100)
@@ -65,6 +67,24 @@ func TestRepository(t *testing.T) {
 					t.Fatal(err)
 				}
 				So(len(repo.ListAll()), ShouldEqual, 0)
+			})
+		})
+
+		Convey("When deleting an author with errors on quote service", func() {
+			authorID, _ := repo.AddAuthor(data.NewAuthorBuilder().WithName(name).Build())
+
+			Convey("When quotes service throw error, should not delete author", func() {
+				clientRepository.SetDeleteAuthorQuotesReturn(true, fmt.Errorf("error"))
+				err := repo.DeleteAuthor(authorID)
+				So(err, ShouldNotBeNil)
+				So(len(repo.ListAll()), ShouldEqual, 1)
+			})
+
+			Convey("When quotes service return false, should not delete author", func() {
+				clientRepository.SetDeleteAuthorQuotesReturn(false, nil)
+				err := repo.DeleteAuthor(authorID)
+				So(err, ShouldNotBeNil)
+				So(len(repo.ListAll()), ShouldEqual, 1)
 			})
 		})
 

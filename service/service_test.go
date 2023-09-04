@@ -14,6 +14,7 @@ func TestService(t *testing.T) {
 
 	name := faker.Name()
 	picUrl := faker.ImageURL(100, 100)
+	clientRepo := repository.NewFakeClientRepository()
 	author := data.NewAuthorBuilder().
 		WithName(name).
 		WithPicUrl(picUrl).
@@ -21,7 +22,7 @@ func TestService(t *testing.T) {
 
 	Convey("When creating a new service", t, func() {
 		database := repository.NewInMemoryDatabase()
-		repo := repository.New(database)
+		repo := repository.New(database, clientRepo)
 		service := New(repo)
 
 		Convey("The service should be initialized", func() {
