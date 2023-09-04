@@ -74,7 +74,14 @@ func TestRepository(t *testing.T) {
 			authorID, _ := repo.AddAuthor(data.NewAuthorBuilder().WithName(name).Build())
 
 			Convey("When quotes service throw error, should not delete author", func() {
-				clientRepository.SetDeleteAuthorQuotesReturn(fmt.Errorf("error"))
+				clientRepository.SetDeleteAuthorQuotesReturn(true, fmt.Errorf("error"))
+				err := repo.DeleteAuthor(authorID)
+				So(err, ShouldNotBeNil)
+				So(len(repo.ListAll()), ShouldEqual, 1)
+			})
+
+			Convey("When quotes service return false, should not delete author", func() {
+				clientRepository.SetDeleteAuthorQuotesReturn(false, nil)
 				err := repo.DeleteAuthor(authorID)
 				So(err, ShouldNotBeNil)
 				So(len(repo.ListAll()), ShouldEqual, 1)

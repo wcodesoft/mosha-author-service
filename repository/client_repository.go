@@ -7,7 +7,7 @@ import (
 )
 
 type ClientRepository interface {
-	DeleteAuthorQuotes(authorID string) error
+	DeleteAuthorQuotes(authorID string) (bool, error)
 }
 
 type clientRepository struct {
@@ -15,9 +15,9 @@ type clientRepository struct {
 }
 
 // DeleteAuthorQuotes deletes all quotes from an author.
-func (c *clientRepository) DeleteAuthorQuotes(authorID string) error {
-	_, err := c.quoteClient.DeleteAllQuotesByAuthor(context.Background(), &qpb.DeleteQuotesByAuthorRequest{AuthorId: authorID})
-	return err
+func (c *clientRepository) DeleteAuthorQuotes(authorID string) (bool, error) {
+	res, err := c.quoteClient.DeleteAllQuotesByAuthor(context.Background(), &qpb.DeleteQuotesByAuthorRequest{AuthorId: authorID})
+	return res.Success, err
 }
 
 // NewClientRepository creates a new client repository.
