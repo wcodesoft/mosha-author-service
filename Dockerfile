@@ -5,8 +5,12 @@ WORKDIR /app/mosha-author-service
 COPY . .
 RUN go get .
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o app .
+FROM alpine:latest as certs
+RUN apk --update add ca-certificates
 
 FROM scratch
+
+COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 
 ENV HTTP_PORT 8180
 ENV GRPC_PORT 8181
