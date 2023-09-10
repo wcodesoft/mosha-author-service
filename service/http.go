@@ -2,6 +2,7 @@ package service
 
 import (
 	"encoding/json"
+	sentryhttp "github.com/getsentry/sentry-go/http"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/wcodesoft/mosha-author-service/data"
@@ -31,7 +32,13 @@ func (as *AuthorService) GetPort() string {
 // MakeHandler creates a handler for the service.
 func (as *AuthorService) MakeHandler() http.Handler {
 	r := chi.NewRouter()
+	sentryHandler := sentryhttp.New(sentryhttp.Options{
+		Repanic: true,
+	})
+
 	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
+	r.Use(sentryHandler.Handle)
 	r.Get("/api/v1/author/all", as.listAllHandler)
 	r.Get("/api/v1/author/{id}", as.createGetAuthorHandler)
 	r.Post("/api/v1/author/delete/{id}", as.deleteAuthorHandler)
