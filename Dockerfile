@@ -5,7 +5,8 @@ WORKDIR /app/mosha-author-service
 COPY . .
 RUN go get .
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o app .
-FROM alpine:latest as certs
+
+FROM alpine:3.18 as certs
 RUN apk --update add ca-certificates
 
 FROM scratch
